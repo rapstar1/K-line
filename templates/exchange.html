@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <!-- Add Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- Add Bootstrap JS and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <title>Exchange Example</title>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .btn-lg {
+            width: 100%;
+        }
+
+        .form-control {
+            margin-bottom: 10px;
+        }
+
+        /* 优化买卖容器 */
+        .trade-section {
+            background-color: #ffffff;
+            color: #333;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+
+        .trade-section h5 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .trade-section input {
+            background-color: #f1f3f5;
+            color: #333;
+            border: 1px solid #ced4da;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+
+        .trade-section .btn {
+            width: 100%;
+            padding: 10px;
+            font-size: 18px;
+        }
+
+        .buy-section {
+            border: 2px solid #00cc66;
+        }
+
+        .sell-section {
+            border: 2px solid #ff3333;
+        }
+
+        .form-label {
+            color: #333;
+        }
+
+        /* 列表样式优化 */
+        .buy-list, .sell-list {
+            background-color: #ffffff;
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid #dee2e6;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+
+        .buy-list {
+            border-color: #00cc66;
+        }
+
+        .sell-list {
+            border-color: #ff3333;
+        }
+
+        .flex-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .flex-item {
+            flex: 1;
+        }
+
+        .list-group-item {
+            background-color: #f8f9fa;
+            color: #333;
+            border: 1px solid #ced4da;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-1">
+                <!-- Left Navbar -->
+            </div>
+            <div class="col-8">
+                <!-- 保持 K 线图容器不变 -->
+                <div class="container" id="chart" style="background-color: #1e1e1e; height: 600px;">
+                    <!-- K-line chart container -->
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="trade-history-container">
+                    <h5>最新成交</h5>
+                    <table class="table table-striped trade-table">
+                        <thead>
+                            <tr>
+                                <th>价格(USDT)</th>
+                                <th>数量(BNB)</th>
+                                <th>时间</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tradeHistoryBody">
+                            <!-- Dynamic trade history -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-12">
+                <div class="flex-container">
+                    <!-- 买入容器 -->
+                    <div class="trade-section buy-section flex-item">
+                        <h5>买入</h5>
+                        <form>
+                            <div class="mb-3">
+                                <label class="form-label">价格 (USDT)</label>
+                                <input type="text" class="form-control" placeholder="Price" name="price">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">数量 (BNB)</label>
+                                <input type="text" class="form-control" placeholder="Amount" name="amount">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">总计: <span id="total-buy"></span></label>
+                            </div>
+                            <button type="submit" class="btn btn-success" id="buy">买入</button>
+                        </form>
+                    </div>
+                    <!-- 买入列表 -->
+                    <div class="buy-list flex-item">
+                        <h5>买入列表</h5>
+                        <ul id="buyList" class="list-group">
+                            <!-- 买单列表 -->
+                            <li class="list-group-item">买单1</li>
+                            <li class="list-group-item">买单2</li>
+                        </ul>
+                    </div>
+
+                    <!-- 卖出容器 -->
+                    <div class="trade-section sell-section flex-item">
+                        <h5>卖出</h5>
+                        <form>
+                            <div class="mb-3">
+                                <label class="form-label">价格 (USDT)</label>
+                                <input type="text" class="form-control" placeholder="Price" name="price">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">数量 (BNB)</label>
+                                <input type="text" class="form-control" placeholder="Amount" name="amount">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">总计: <span id="total-sell"></span></label>
+                            </div>
+                            <button type="submit" class="btn btn-danger" id="sell">卖出</button>
+                        </form>
+                    </div>
+                    <!-- 卖出列表 -->
+                    <div class="sell-list flex-item">
+                        <h5>卖出列表</h5>
+                        <ul id="sellList" class="list-group">
+                            <!-- 卖单列表 -->
+                            <li class="list-group-item">卖单1</li>
+                            <li class="list-group-item">卖单2</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('[name="price"]').val(4979);
+            $('[name="amount"]').val(8);
+
+            // 更新买入总计
+            $('[name="price"], [name="amount"]').on('change', function() {
+                var price = parseFloat($('[name="price"]').val());
+                var amount = parseFloat($('[name="amount"]').val());
+                var total = price * amount;
+                $('#total-buy').text(total);
+                $('#total-sell').text(total); // 卖出部分的总计同步更新
+            });
+
+            $('#buy').on('click', function(e) {
+                e.preventDefault();
+                $('[name="type"]').val('buy');
+                submitForm();
+            });
+
+            $('#sell').on('click', function(e) {
+                e.preventDefault();
+                $('[name="type"]').val('sell');
+                submitForm();
+            });
+
+            function submitForm() {
+                $.ajax({
+                    url: 'order',
+                    method: 'POST',
+                    data: $('form').serialize(),
+                    success: function(response) {
+                        console.log(response);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(error);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
